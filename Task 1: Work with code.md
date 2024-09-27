@@ -239,4 +239,173 @@ Result
 The sum of the power of the minimum sets of cubes for all games is 68,638. ​
 
 ​
+# Task 2) --- Day 1: Trebuchet?! ---
+**Prompt 1:**
+please solve the below puzzle probmem:Something is wrong with global snow production, and you've been selected to take a look. The Elves have even given you a map; on it, they've used stars to mark the top fifty locations that are likely to be having problems.
+You've been doing this long enough to know that to restore snow operations, you need to check all fifty stars by December 25th.
+Collect stars by solving puzzles. Two puzzles will be made available on each day in the Advent calendar; the second puzzle is unlocked when you complete the first. Each puzzle grants one star. Good luck!
+You try to ask why they can't just use a weather machine ("not powerful enough") and where they're even sending you ("the sky") and why your map looks mostly blank ("you sure ask a lot of questions") and hang on did you just say the sky ("of course, where do you think snow comes from") when you realize that the Elves are already loading you into a trebuchet ("please hold still, we need to strap you in").
+As they're making the final adjustments, they discover that their calibration document (your puzzle input) has been amended by a very young Elf who was apparently just excited to show off her art skills. Consequently, the Elves are having trouble reading the values on the document.
+The newly-improved calibration document consists of lines of text; each line originally contained a specific calibration value that the Elves now need to recover. On each line, the calibration value can be found by combining the first digit and the last digit (in that order) to form a single two-digit number.
+For example:
+1abc2
+pqr3stu8vwx
+a1b2c3d4e5f
+treb7uchet
+**Response by Gemini 1.5 pro:**
+In this example, the calibration values of these four lines are 12, 38, 15, and 77. Adding these together produces 142.
+Consider your entire calibration document. What is the sum of all of the calibration values?
+Here's a Python function that solves this problem, along with an explanation of the approach:
+
+```python
+import re
+
+def sum_calibration_values(calibration_document):
+   """Calculates the sum of calibration values from a document.
+
+   Args:
+       calibration_document: A string representing the calibration document, 
+                            with each line separated by a newline character.
+
+   Returns:
+       The sum of all calibration values.
+   """
+
+   total_sum = 0
+   for line in calibration_document.splitlines():
+       digits = re.findall(r'\d', line) # Extract all digits using regular expressions
+       if digits:
+           calibration_value = int(digits[0] + digits[-1]) # Combine the first and last digits
+           total_sum += calibration_value
+   return total_sum
+
+
+
+# Example usage (replace with your actual input):
+calibration_document = """1abc2
+pqr3stu8vwx
+a1b2c3d4e5f
+treb7uchet"""
+
+sum_of_values = sum_calibration_values(calibration_document)
+print(sum_of_values) # Output: 142
+
+
+# To use with a file:
+with open("your_input_file.txt", "r") as f:
+   calibration_document = f.read()
+   sum_of_values = sum_calibration_values(calibration_document)
+   print(sum_of_values)
+```
+
+** Explanation: **
+
+1. ** Import `re`:** This line imports the regular expression module, which is used to efficiently extract digits from each line.
+
+2. ** `sum_calibration_values(calibration_document)` function:**
+  - Initializes `total_sum` to 0.
+  - Splits the input `calibration_document` into individual lines using `splitlines()`.
+  - Iterates through each `line`.
+  - **`re.findall(r'\d', line)`:** This is the key part. It uses a regular expression `\d` (which matches any digit) to find all digits in the current line and returns them as a list.
+  - ** `if digits:`:** Checks if any digits were found in the line. This handles cases where a line might be empty or contain no digits.
+  - ** `calibration_value = int(digits[0] + digits[-1])`:** Takes the first digit (`digits[0]`) and the last digit (`digits[-1]`) from the list, concatenates them into a string, and converts the result to an integer.
+  - Adds the `calibration_value` to the `total_sum`.
+  - Returns the final `total_sum`.
+
+3. ** Example Usage/File Input:** The code shows how to use the function with both a sample string and how to read the input from a file named "your_input_file.txt". Make sure to replace `"your_input_file.txt"` with the actual path to your input file.
+
+
+
+This approach is clear, concise, and handles potential edge cases (lines with no digits). Using regular expressions makes the digit extraction very efficient. Remember to replace the example input with your actual puzzle input to get the correct answer.
+
+**Prompt 2:** now solve the second part:
+Your calculation isn't quite right. It looks like some of the digits are actually spelled out with letters: one, two, three, four, five, six, seven, eight, and nine also count as valid "digits".
+Equipped with this new information, you now need to find the real first and last digit on each line. For example:
+two1nine
+eightwothree
+abcone2threexyz
+xtwone3four
+4nineeightseven2
+zoneight234
+7pqrstsixteen
+In this example, the calibration values are 29, 83, 13, 24, 42, 14, and 76. Adding these together produces 281.
+What is the sum of all of the calibration values?
+**Response by Gemini 1.5 pro:**
+```python
+import re
+
+def sum_calibration_values_part2(calibration_document):
+    """Calculates the sum of calibration values, including spelled-out digits.
+
+    Args:
+        calibration_document: The calibration document string.
+
+    Returns:
+        The sum of all calibration values.
+    """
+
+    digit_map = {
+        "one": "1", "two": "2", "three": "3", "four": "4", "five": "5",
+        "six": "6", "seven": "7", "eight": "8", "nine": "9"
+    }
+
+    total_sum = 0
+    for line in calibration_document.splitlines():
+        # Use regex with overlapping matches and lookahead assertions
+        all_digits = re.findall(r"(?=(\d|one|two|three|four|five|six|seven|eight|nine))", line)
+
+        if all_digits:
+            first_digit = all_digits[0]
+            last_digit = all_digits[-1]
+
+            # Convert spelled-out digits to numeric
+            if first_digit in digit_map:
+                first_digit = digit_map[first_digit]
+            if last_digit in digit_map:
+                last_digit = digit_map[last_digit]
+                
+            calibration_value = int(first_digit + last_digit)
+            total_sum += calibration_value
+
+    return total_sum
+
+
+# Example usage (replace with your actual input):
+calibration_document = """two1nine
+eightwothree
+abcone2threexyz
+xtwone3four
+4nineeightseven2
+zoneight234
+7pqrstsixteen"""
+
+sum_of_values = sum_calibration_values_part2(calibration_document)
+print(sum_of_values)  # Output: 281
+
+
+
+# To use with a file:
+with open("your_input_file.txt", "r") as f:
+    calibration_document = f.read()
+    sum_of_values = sum_calibration_values_part2(calibration_document)
+    print(sum_of_values)
+
+```
+
+
+** Explanation of Changes for Part 2:**
+
+1. ** `digit_map` Dictionary:** This dictionary maps the spelled-out digit names to their numeric equivalents.
+
+2. ** Overlapping Matches with Lookahead Assertions:** The most crucial change is in the regular expression: `r"(?=(\d|one|two|three|four|five|six|seven|eight|nine))"`.
+   - `(?= ... )` is a *lookahead assertion*. It checks if the pattern inside the parentheses matches at the current position *without* consuming any characters. This is essential for handling overlapping matches (e.g., "twone" needs to match both "two" and "one").
+   - `(\d|one|two|...)` is a capturing group that matches either a digit (`\d`) or one of the spelled-out digit names.
+
+3. ** Spelled-out Digit Conversion:** After extracting `first_digit` and `last_digit`, the code checks if they are present in the `digit_map`. If so, it replaces the spelled-out name with the corresponding number.
+
+
+
+This improved version correctly handles the overlapping spelled-out digits and provides the accurate sum for Part 2 of the puzzle.  Remember to replace the example input and `"your_input_file.txt"` with your actual puzzle input and file path.
+
+
 
